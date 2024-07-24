@@ -22,4 +22,15 @@ module "control_plane" {
     public_subnet = module.network.public_subnets[0]
     vpc_id = module.network.vpc_id
     public_key = var.public_key
+    depends_on = [ module.network ]
+}
+
+module "worker_nodes" {
+    source = "../../modules/worker_nodes"
+
+    name = var.name
+    public_subnet = module.network.public_subnets[0]
+    vpc_id = module.network.vpc_id
+    public_key = var.public_key
+    depends_on = [ module.network ]
 }
