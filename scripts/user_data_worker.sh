@@ -1,7 +1,10 @@
 #!/bin/bash -xe
 
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-hostnamectl set-hostname worker-node-0
+HOSTNAME=$(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
+&& curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-hostname)
+hostnamectl set-hostname $HOSTNAME
+
 apt-get update -y
 apt-get install -y apt-transport-https ca-certificates curl gpg
 

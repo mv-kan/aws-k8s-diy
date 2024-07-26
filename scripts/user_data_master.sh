@@ -1,7 +1,9 @@
 #!/bin/bash -xe
 
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-hostnamectl set-hostname master-node-0
+HOSTNAME=$(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
+&& curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-hostname)
+hostnamectl set-hostname $HOSTNAME
 apt-get update -y
 apt-get install -y apt-transport-https ca-certificates curl gpg
 
@@ -54,12 +56,41 @@ kubeadm config images pull
 NODENAME="master-node-0"
 POD_CIDR="172.16.0.0/12"
 MASTER_PRIVATE_IP=$(hostname -I | awk '{print $1}')
-kubeadm init \
- --apiserver-advertise-address="$MASTER_PRIVATE_IP" \
- --apiserver-cert-extra-sans="$MASTER_PRIVATE_IP" \
- --pod-network-cidr="$POD_CIDR" \
- --node-name "$NODENAME" \
- --ignore-preflight-errors=Mem
+PUBLIC_IP=$(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
+&& curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+
+cat <<EOF | sudo tee /etc/kubeadm-config.yaml
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+apiServer:
+  certSANs:
+    - 127.0.0.1
+    - ${PUBLIC_IP}
+  extraArgs:
+    bind-address: "0.0.0.0"
+    cloud-provider: external
+clusterName: kubernetes
+scheduler:
+  extraArgs:
+    bind-address: "0.0.0.0"
+controllerManager:
+  extraArgs:
+    bind-address: "0.0.0.0"
+    cloud-provider: external
+networking:
+  podSubnet: "172.32.0.0/12"
+  serviceSubnet: "172.16.0.0/12"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  name: $HOSTNAME
+  kubeletExtraArgs:
+    cloud-provider: external
+EOF
+
+kubeadm init --config=/etc/kubeadm-config.yaml --ignore-preflight-errors=Mem
+ 
 
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
@@ -68,4 +99,5 @@ chown "$(id -u)":"$(id -g)" /root/.kube/config
 apt install -y git 
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+# reload bash for calico to apply  
+kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://docs.projectcalico.org/manifests/calico.yaml
