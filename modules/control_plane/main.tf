@@ -44,7 +44,7 @@ resource "aws_instance" "master_node_0" {
   private_dns_name_options {
     enable_resource_name_dns_a_record    = true
     enable_resource_name_dns_aaaa_record = false
-    hostname_type                        = "resource-name"
+    hostname_type                        = "ip-name"
   }
   metadata_options {
     http_tokens = "required"

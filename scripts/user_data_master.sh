@@ -65,7 +65,7 @@ kind: ClusterConfiguration
 apiServer:
   certSANs:
     - 127.0.0.1
-    - ${PUBLIC_IP}
+    - $PUBLIC_IP
   extraArgs:
     bind-address: "0.0.0.0"
     cloud-provider: external
@@ -91,7 +91,6 @@ EOF
 
 kubeadm init --config=/etc/kubeadm-config.yaml --ignore-preflight-errors=Mem
  
-
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 chown "$(id -u)":"$(id -g)" /root/.kube/config
@@ -101,3 +100,9 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # reload bash for calico to apply  
 kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+cd ~
+git clone https://github.com/kubernetes/cloud-provider-aws.git
+cd ./cloud-provider-aws/examples/existing-cluster/base
+
+kubectl --kubeconfig /etc/kubernetes/admin.conf create -k .

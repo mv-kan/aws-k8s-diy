@@ -51,3 +51,20 @@ modprobe overlay
 modprobe br_netfilter
 
 sysctl --system
+
+cd ~
+cat <<EOF | tee ./kubeadm-join-config.yaml
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    token: <token>
+    apiServerEndpoint: "<server ip address>"
+    caCertHashes:
+      - "<sha hash>" 
+nodeRegistration:
+  name: $HOSTNAME
+  kubeletExtraArgs:
+    cloud-provider: external
+EOF
