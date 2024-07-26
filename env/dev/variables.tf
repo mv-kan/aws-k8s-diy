@@ -33,3 +33,15 @@ variable "public_key" {
     type = string
     default = ""
 }
+
+variable "user_data_master" {
+  description = "User data for master nodes"
+  type = string
+  default = ""
+}
+
+variable "user_data_worker" {
+  description = "User data for worker nodes"
+  type = string
+  default = ""
+}

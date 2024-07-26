@@ -21,6 +21,17 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_ipv4" {
   ip_protocol       = "-1" 
 }
 
+resource "aws_eip" "nat_eip_worker" {
+  tags = {
+    Name = "${var.name}-worker-ip"
+  }
+}
+
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = aws_instance.worker_node_0.id
+  allocation_id = aws_eip.nat_eip_worker.id
+}
+
 resource "aws_instance" "worker_node_0" {
   ami           = "ami-0b27735385ddf20e8"
   instance_type = "t3.micro"
@@ -40,4 +51,5 @@ resource "aws_instance" "worker_node_0" {
     http_tokens = "required"
     http_endpoint = "enabled"
   }
+  user_data = file("../../scripts/user_data_worker.sh")
 } 

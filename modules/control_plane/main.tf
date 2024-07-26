@@ -20,15 +20,15 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" 
 }
-resource "aws_eip" "nat_eip" {
+resource "aws_eip" "nat_eip_master" {
   tags = {
-    Name = var.name
+    Name = "${var.name}-master-ip"
   }
 }
 
 resource "aws_eip_association" "eip_assoc" {
   instance_id   = aws_instance.master_node_0.id
-  allocation_id = aws_eip.nat_eip.id
+  allocation_id = aws_eip.nat_eip_master.id
 }
 
 resource "aws_instance" "master_node_0" {
@@ -50,4 +50,5 @@ resource "aws_instance" "master_node_0" {
     http_tokens = "required"
     http_endpoint = "enabled"
   }
+  user_data = file("../../scripts/user_data_master.sh")
 } 
