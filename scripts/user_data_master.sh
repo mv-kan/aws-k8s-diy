@@ -13,6 +13,7 @@ echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
+systemctl daemon-reload
 systemctl enable --now kubelet
 
 apt-get update -y
@@ -58,6 +59,10 @@ POD_CIDR="172.16.0.0/12"
 MASTER_PRIVATE_IP=$(hostname -I | awk '{print $1}')
 PUBLIC_IP=$(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
 && curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+LOCAL_IP=$(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
+&& curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
+
+echo "KUBELET_EXTRA_ARGS=--node-ip=$LOCAL_IP" | sudo tee /etc/default/kubelet > /dev/null
 
 cat <<EOF | sudo tee /etc/kubeadm-config.yaml
 apiVersion: kubeadm.k8s.io/v1beta3

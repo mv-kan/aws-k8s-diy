@@ -1,6 +1,7 @@
 resource "aws_eip" "nat_eip" {
   tags = {
     Name = var.name
+    "kubernetes.io/cluster/kubernetes" = "owned"
   }
 }
 
@@ -15,4 +16,7 @@ module "vpc" {
 
   public_subnets=var.public_subnets
   create_igw=true 
+  tags = {
+    "kubernetes.io/cluster/kubernetes" = "owned"
+  }
 }
