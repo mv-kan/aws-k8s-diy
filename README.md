@@ -15,6 +15,56 @@ in worker node:
 kubeadm join --config ~/kubeadm-join-config.yaml
 ```
 
+## Testing new cluster 
+in master node 
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3  
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+EOF
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+EOF
+
+kubectl get svc nginx-service
+# expected output 
+# NAME            TYPE           CLUSTER-IP      
+# EXTERNAL-IP                                                                     PORT(S)        AGE
+# nginx-service   LoadBalancer   10.101.171.34   aa64c7e28c3384b5598493b6fbb04d4c-f53de39b06106733.elb.us-west-2.amazonaws.com   80:30249/TCP   39s
+```
+open browser and type external ip (aa64c7e28c3384b5598493b6fbb04d4c-f53de39b06106733.elb.us-west-2.amazonaws.com) address.
+You should see Nginx welcome page
 
 # Really helpful resources
 

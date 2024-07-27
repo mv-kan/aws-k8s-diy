@@ -70,17 +70,19 @@ resource "aws_iam_policy" "ccm_master_policy1" {
     Statement = [{
       Effect   = "Allow",
       Action   = [
-        "autoscaling:DescribeAutoScalingGroups",
-        "autoscaling:DescribeLaunchConfigurations",
-        "autoscaling:DescribeTags",
-        "ec2:DescribeInstances",
-        "ec2:DescribeRegions",
-        "ec2:DescribeRouteTables",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVolumes",
-        "ec2:DescribeAvailabilityZones",
-        "ec2:DescribeVpcs"
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeTags",
+          "ec2:DescribeInstances",
+          "ec2:DescribeRegions",
+          "ec2:DescribeInternetGateways",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeAccountAttributes",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeAvailabilityZones",
+          "ec2:DescribeVpcs"
       ],
       Resource: ["*"]
     }]
@@ -171,7 +173,7 @@ resource "aws_iam_instance_profile" "ccm_master" {
 
 resource "aws_instance" "master_node_0" {
   ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   key_name      = aws_key_pair.master_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_master.id]
