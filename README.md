@@ -104,9 +104,9 @@ kubectl get svc nginx-service
 # expected output 
 # NAME            TYPE           CLUSTER-IP      
 # EXTERNAL-IP                                                                     PORT(S)        AGE
-# nginx-service   LoadBalancer   10.101.171.34   aa64c7e28c3384b5598493b6fbb04d4c-f53de39b06106733.elb.us-west-2.amazonaws.com   80:30249/TCP   39s
+# nginx-service   LoadBalancer   10.101.171.34   adcea7b2b258d4999aab8920aa68e45c-5aee029d0337f1ce.elb.eu-north-1.amazonaws.com   80:30249/TCP   39s
 ```
-open browser and type external ip (aa64c7e28c3384b5598493b6fbb04d4c-f53de39b06106733.elb.us-west-2.amazonaws.com) address.
+open browser and type external ip (adcea7b2b258d4999aab8920aa68e45c-5aee029d0337f1ce.elb.eu-north-1.amazonaws.com) address.
 You should see Nginx welcome page
 
 ## How to properly delete cluster 
