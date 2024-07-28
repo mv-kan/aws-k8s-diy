@@ -10,6 +10,11 @@ THIS IS NOT PRODUCTION READY CLUSTER!!! THIS PROJECT IS JUST FOR DEMONSTRATION P
 4. Internet Gateway - 1x 
 5. VPC - 1x
 6. Subnets in VPC - 3x 
+7. one file (state file) in S3 bucket 
+
+## Configure S3 bucket 
+
+Create s3 bucket with name `aws-k8s-diy` in your aws account 
 
 ## terraform apply
 

@@ -4,6 +4,15 @@ provider "aws" {
   allowed_account_ids = var.allowed_account_ids
 }
 
+terraform {
+  backend "s3" {
+    bucket  = "aws-k8s-diy"
+    key     = "terraform/terraform.tfstate"
+    region  = "eu-north-1"
+    encrypt = true
+  }
+}
+
 module "network" {
   source = "../../modules/network"
 
