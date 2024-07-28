@@ -33,18 +33,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_ipv4" {
   }
 }
 
-resource "aws_eip" "nat_eip_worker" {
-  tags = {
-    Name = "${var.name}-worker-ip"
-    "kubernetes.io/cluster/kubernetes" = "owned"
-  }
-}
-
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.worker_node_0.id
-  allocation_id = aws_eip.nat_eip_worker.id
-}
-
 # cloud control manager worker 
 resource "aws_iam_role" "ccm_worker_role" {
   name = "ccm_worker_role"
@@ -104,6 +92,18 @@ resource "aws_iam_instance_profile" "ccm_worker" {
   }
 } 
 
+resource "aws_eip" "nat_eip_worker_0" {
+  tags = {
+    Name = "${var.name}-worker-0-ip"
+    "kubernetes.io/cluster/kubernetes" = "owned"
+  }
+}
+
+resource "aws_eip_association" "eip_assoc_0" {
+  instance_id   = aws_instance.worker_node_0.id
+  allocation_id = aws_eip.nat_eip_worker_0.id
+}
+
 resource "aws_instance" "worker_node_0" {
   ami           = "ami-0b27735385ddf20e8"
   instance_type = "t3.small"
@@ -113,6 +113,41 @@ resource "aws_instance" "worker_node_0" {
   subnet_id = var.public_subnet
   tags = {
     Name = "${var.name}-worker_node_0"
+    "kubernetes.io/cluster/kubernetes" = "owned"
+  }
+  private_dns_name_options {
+    enable_resource_name_dns_a_record    = true
+    enable_resource_name_dns_aaaa_record = false
+    hostname_type                        = "ip-name"
+  }
+  metadata_options {
+    http_tokens = "required"
+    http_endpoint = "enabled"
+  }
+  user_data = file("../../scripts/user_data_worker.sh")
+  iam_instance_profile = aws_iam_instance_profile.ccm_worker.name
+} 
+
+
+resource "aws_eip" "nat_eip_worker_1" {
+  tags = {
+    Name = "${var.name}-worker-1-ip"
+    "kubernetes.io/cluster/kubernetes" = "owned"
+  }
+}
+resource "aws_eip_association" "eip_assoc_1" {
+  instance_id   = aws_instance.worker_node_1.id
+  allocation_id = aws_eip.nat_eip_worker_1.id
+}
+resource "aws_instance" "worker_node_1" {
+  ami           = "ami-0b27735385ddf20e8"
+  instance_type = "t3.small"
+  key_name      = aws_key_pair.worker_key.key_name
+  
+  vpc_security_group_ids = [aws_security_group.allow_worker.id]
+  subnet_id = var.public_subnet
+  tags = {
+    Name = "${var.name}-worker_node_1"
     "kubernetes.io/cluster/kubernetes" = "owned"
   }
   private_dns_name_options {

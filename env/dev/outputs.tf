@@ -13,7 +13,7 @@ output "master_public_ip" {
   value       = module.control_plane.public_ip
 }
 
-output "worker_public_ip" {
+output "workers_public_ips" {
   description = "The IDs of public subnets"
-  value       = module.worker_nodes.public_ip
+  value       = module.worker_nodes.public_ips
 }
