@@ -94,7 +94,7 @@ resource "aws_iam_instance_profile" "ccm_worker" {
 
 resource "aws_instance" "worker_node_0" {
   ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   key_name      = aws_key_pair.worker_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_worker.id]
@@ -118,7 +118,7 @@ resource "aws_instance" "worker_node_0" {
 
 resource "aws_instance" "worker_node_1" {
   ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   key_name      = aws_key_pair.worker_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_worker.id]

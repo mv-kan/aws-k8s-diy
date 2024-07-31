@@ -19,9 +19,39 @@ module "vpc" {
   }
 }
 
+resource "aws_security_group" "allow_eice_endpoint" {
+  name        = "${var.name}-allow-eice-endpoint"
+  description = "Allow TLS inbound traffic and all outbound traffic"
+  vpc_id      = module.vpc.vpc_id
+  tags = {
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_eice_ingress_ipv4" {
+  security_group_id = aws_security_group.allow_eice_endpoint.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  tags = {
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_eice_egress_ipv4" {
+  security_group_id = aws_security_group.allow_eice_endpoint.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" 
+  tags = {
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
+  }
+}
+ 
+
 resource "aws_ec2_instance_connect_endpoint" "ec2_endpoint" {
   subnet_id = module.vpc.private_subnets[0]
+  security_group_ids = [aws_security_group.allow_eice_endpoint.id]
   tags = {
+    Name = var.name
     "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }

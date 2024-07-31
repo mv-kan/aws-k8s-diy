@@ -4,17 +4,31 @@ THIS IS NOT PRODUCTION READY CLUSTER!!! THIS PROJECT IS JUST FOR DEMONSTRATION P
 
 ## Services that is used here
 
-1. EC2 - 1x t3.small, 2x t3.micro (730 hours of t3.micro is free for Free Tier accounts)
+1. EC2 - 5x t3.small
 2. Elastic IP - 3x 
 3. Network Load Balancer - 1x
 4. Internet Gateway - 1x 
 5. VPC - 1x
-6. Subnets in VPC - 3x 
+6. Subnets in VPC - 2x 
 7. one file (state file) in S3 bucket 
 
 ## Configure S3 bucket 
 
-Create s3 bucket with name `aws-k8s-diy` in your aws account 
+Create s3 bucket with some name like `mycoolbucket-<randomid>` in your aws account. Paste this name to `./env/dev/main.tf` file in this section 
+```
+something here... 
+
+terraform {
+  backend "s3" {
+    bucket  = "aws-k8s-diy" # <- change this value
+    key     = "terraform/terraform.tfstate"
+    region  = "eu-north-1"
+    encrypt = true
+  }
+}
+
+something here too... 
+```
 
 ## terraform apply
 
@@ -35,6 +49,12 @@ terrafrom apply
 ## Manual Action
 
 ### How to connect 
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-using-eice.html
+```
+ssh -i my-key-pair.pem admin@i-0123456789example \
+    -o ProxyCommand='aws ec2-instance-connect open-tunnel --instance-id i-0123456789example'
+```
 
 ### What to do inside 
 

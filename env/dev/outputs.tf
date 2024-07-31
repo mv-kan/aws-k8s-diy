@@ -22,3 +22,18 @@ output "workers_private_ips" {
   description = "The IDs of private subnets"
   value       = module.worker_nodes.private_ips
 }
+
+output "mom_instance_id" {
+  description = "master of master (mom) instance id"
+  value       = module.control_plane.mom_instance_id
+}
+
+output "master_instance_ids" {
+  description = "master instance ids"
+  value       = module.control_plane.master_instance_ids
+}
+
+output "worker_instance_ids" {
+  description = "worker instance ids"
+  value       = module.worker_nodes.worker_instance_ids
+}
