@@ -67,11 +67,11 @@ echo "KUBELET_EXTRA_ARGS=--node-ip=$LOCAL_IP" | sudo tee /etc/default/kubelet > 
 cat <<EOF | sudo tee /etc/kubeadm-config.yaml
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
-controlPlaneEndpoint: "$TF_LOAD_BALANCER_DNS:$TF_LOAD_BALANCER_PORT"
+# controlPlaneEndpoint: "$TF_LOAD_BALANCER_DNS:$TF_LOAD_BALANCER_PORT"
 apiServer:
   certSANs:
     - 127.0.0.1
-    - $PUBLIC_IP
+    # - $TF_LOAD_BALANCER_DNS
   extraArgs:
     bind-address: "0.0.0.0"
     cloud-provider: external

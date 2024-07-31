@@ -55,6 +55,10 @@ https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-using-eice.html
 ssh -i my-key-pair.pem admin@i-0123456789example \
     -o ProxyCommand='aws ec2-instance-connect open-tunnel --instance-id i-0123456789example'
 ```
+or you can use my script (you need to have credentials for awscli)
+```
+./connect_to_ec2.sh my-key-pair.pem i-0123456789example
+```
 
 ### What to do inside 
 
@@ -153,5 +157,5 @@ terraform destroy
 # Really helpful resources
 
 https://devopscube.com/aws-cloud-controller-manager/
-
+https://erivaldolopes.io/en/criando-um-cluster-kubernetes-em-alta-disponibilidade-com-ambiente-on-premises/
 https://github.com/antonbabenko/terraform-best-practices/blob/master/examples/medium-terraform/stage/variables.tf

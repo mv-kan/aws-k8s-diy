@@ -22,4 +22,16 @@ variable "private_subnet" {
     default = ""
 }
  
+ variable "load_balancer_dns" {
+    description = "load_balancer_dns"
+    type = string
+    default = ""
+}
+ 
+ variable "load_balancer_port" {
+    description = "load_balancer_port"
+    type = string
+    default = ""
+}
+ 
  
