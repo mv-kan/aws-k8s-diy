@@ -2,7 +2,7 @@ resource "aws_key_pair" "worker_key" {
   key_name   = "${var.name}-worker"
   public_key = var.public_key
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -11,7 +11,7 @@ resource "aws_security_group" "allow_worker" {
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = var.vpc_id
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -20,7 +20,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ingress_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" 
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_iam_role" "ccm_worker_role" {
     }]
   })
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 resource "aws_iam_policy" "ccm_worker_policy" {
@@ -74,7 +74,7 @@ resource "aws_iam_policy" "ccm_worker_policy" {
     ]
 })
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -88,32 +88,20 @@ resource "aws_iam_instance_profile" "ccm_worker" {
   name = "ccm_worker"
   role = aws_iam_role.ccm_worker_role.name
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 } 
 
-resource "aws_eip" "nat_eip_worker_0" {
-  tags = {
-    Name = "${var.name}-worker-0-ip"
-    "kubernetes.io/cluster/kubernetes" = "owned"
-  }
-}
-
-resource "aws_eip_association" "eip_assoc_0" {
-  instance_id   = aws_instance.worker_node_0.id
-  allocation_id = aws_eip.nat_eip_worker_0.id
-}
-
 resource "aws_instance" "worker_node_0" {
   ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.small"
+  instance_type = "t3.micro"
   key_name      = aws_key_pair.worker_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_worker.id]
-  subnet_id = var.public_subnet
+  subnet_id = var.private_subnet
   tags = {
     Name = "${var.name}-worker_node_0"
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
   private_dns_name_options {
     enable_resource_name_dns_a_record    = true
@@ -128,27 +116,16 @@ resource "aws_instance" "worker_node_0" {
   iam_instance_profile = aws_iam_instance_profile.ccm_worker.name
 } 
 
-
-resource "aws_eip" "nat_eip_worker_1" {
-  tags = {
-    Name = "${var.name}-worker-1-ip"
-    "kubernetes.io/cluster/kubernetes" = "owned"
-  }
-}
-resource "aws_eip_association" "eip_assoc_1" {
-  instance_id   = aws_instance.worker_node_1.id
-  allocation_id = aws_eip.nat_eip_worker_1.id
-}
 resource "aws_instance" "worker_node_1" {
   ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.small"
+  instance_type = "t3.micro"
   key_name      = aws_key_pair.worker_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_worker.id]
-  subnet_id = var.public_subnet
+  subnet_id = var.private_subnet
   tags = {
     Name = "${var.name}-worker_node_1"
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
   private_dns_name_options {
     enable_resource_name_dns_a_record    = true

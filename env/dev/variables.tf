@@ -28,6 +28,12 @@ variable "public_subnets" {
   default     = []
 }
 
+variable "private_subnets" {
+  description = "A list of private subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
+
 variable "public_key" {
     description = "Public key that can be used for connecting with ec2"
     type = string
@@ -42,6 +48,12 @@ variable "user_data_master" {
 
 variable "user_data_worker" {
   description = "User data for worker nodes"
+  type = string
+  default = ""
+}
+
+variable "cluster_name" {
+  description = "Cluster name for resources tags"
   type = string
   default = ""
 }

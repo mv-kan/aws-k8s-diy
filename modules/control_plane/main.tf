@@ -2,7 +2,7 @@ resource "aws_key_pair" "master_key" {
   key_name   = "${var.name}-master"
   public_key = var.public_key
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -11,7 +11,7 @@ resource "aws_security_group" "allow_master" {
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = var.vpc_id
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -20,7 +20,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ingress_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -29,21 +29,10 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" 
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
-resource "aws_eip" "nat_eip_master" {
-  tags = {
-    Name = "${var.name}-master-ip"
-    "kubernetes.io/cluster/kubernetes" = "owned"
-  }
-}
-
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.master_node_0.id
-  allocation_id = aws_eip.nat_eip_master.id
-}
-
+ 
 # cloud control manager master 
 resource "aws_iam_role" "ccm_master_role" {
   name = "ccm_master_role"
@@ -59,7 +48,7 @@ resource "aws_iam_role" "ccm_master_role" {
     }]
   })
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -88,7 +77,7 @@ resource "aws_iam_policy" "ccm_master_policy1" {
     }]
   })
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -149,7 +138,7 @@ resource "aws_iam_policy" "ccm_master_policy2" {
     }]
   })
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -167,7 +156,7 @@ resource "aws_iam_instance_profile" "ccm_master" {
   name = "ccm_master"
   role = aws_iam_role.ccm_master_role.name
   tags = {
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
 }
 
@@ -177,10 +166,60 @@ resource "aws_instance" "master_node_0" {
   key_name      = aws_key_pair.master_key.key_name
   
   vpc_security_group_ids = [aws_security_group.allow_master.id]
-  subnet_id = var.public_subnet
+  subnet_id = var.private_subnet
   tags = {
     Name = "${var.name}-master_node_0"
-    "kubernetes.io/cluster/kubernetes" = "owned"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
+  }
+  private_dns_name_options {
+    enable_resource_name_dns_a_record    = true
+    enable_resource_name_dns_aaaa_record = false
+    hostname_type                        = "ip-name"
+  }
+  metadata_options {
+    http_tokens = "required"
+    http_endpoint = "enabled"
+  }
+  user_data = file("../../scripts/user_data_mom.sh")
+  iam_instance_profile = aws_iam_instance_profile.ccm_master.name
+} 
+
+
+resource "aws_instance" "master_node_1" {
+  ami           = "ami-0b27735385ddf20e8"
+  instance_type = "t3.small"
+  key_name      = aws_key_pair.master_key.key_name
+  
+  vpc_security_group_ids = [aws_security_group.allow_master.id]
+  subnet_id = var.private_subnet
+  tags = {
+    Name = "${var.name}-master_node_1"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
+  }
+  private_dns_name_options {
+    enable_resource_name_dns_a_record    = true
+    enable_resource_name_dns_aaaa_record = false
+    hostname_type                        = "ip-name"
+  }
+  metadata_options {
+    http_tokens = "required"
+    http_endpoint = "enabled"
+  }
+  user_data = file("../../scripts/user_data_master.sh")
+  iam_instance_profile = aws_iam_instance_profile.ccm_master.name
+} 
+
+
+resource "aws_instance" "master_node_2" {
+  ami           = "ami-0b27735385ddf20e8"
+  instance_type = "t3.small"
+  key_name      = aws_key_pair.master_key.key_name
+  
+  vpc_security_group_ids = [aws_security_group.allow_master.id]
+  subnet_id = var.private_subnet
+  tags = {
+    Name = "${var.name}-master_node_2"
+    "kubernetes.io/cluster/diy-kubernetes" = "owned"
   }
   private_dns_name_options {
     enable_resource_name_dns_a_record    = true

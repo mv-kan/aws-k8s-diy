@@ -7,3 +7,8 @@ output "public_subnets" {
   description = "The IDs of public subnets"
   value       = module.vpc.public_subnets
 }
+
+output "private_subnets" {
+  description = "The IDs of private subnets"
+  value       = module.vpc.private_subnets
+}

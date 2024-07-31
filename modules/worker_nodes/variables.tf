@@ -16,8 +16,9 @@ variable "vpc_id" {
     default = ""
 }
 
-variable "public_subnet" {
-    description = "Public subnet where to put ec2 instances"
+variable "private_subnet" {
+    description = "Private subnet where to put ec2 instances"
     type = string
     default = ""
 }
+ 

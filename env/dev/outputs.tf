@@ -8,12 +8,17 @@ output "public_subnets" {
   value       = module.network.public_subnets
 }
 
-output "master_public_ip" {
-  description = "The IDs of public subnets"
-  value       = module.control_plane.public_ip
-}
+# output "master_of_masters_ip" {
+#   description = "The MVP of masters control plane"
+#   value       = module.control_plane.master_of_masters_ip
+# }
 
-output "workers_public_ips" {
-  description = "The IDs of public subnets"
-  value       = module.worker_nodes.public_ips
+# output "master_public_ips" {
+#   description = "The IDs of public subnets"
+#   value       = module.control_plane.public_ips
+# }
+
+output "workers_private_ips" {
+  description = "The IDs of private subnets"
+  value       = module.worker_nodes.private_ips
 }
