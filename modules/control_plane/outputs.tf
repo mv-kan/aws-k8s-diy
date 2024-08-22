@@ -8,13 +8,8 @@
 #   value       = [aws_eip.nat_eip_master_0.public_ip]
 # }
 
-# mom - master of masters
-output "mom_instance_id" {
-  description = "Master of masters instance id"
-  value       = [aws_instance.master_node_0.id]
-}
-
+# mom - master of masters 
 output "master_instance_ids" {
-  description = "Master of masters, where you make all configuration"
-  value       = [aws_instance.master_node_0.id, aws_instance.master_node_1.id, aws_instance.master_node_2.id]
+  description = "Master where you make all configuration"
+  value       = [aws_instance.master_node_0.id]
 }

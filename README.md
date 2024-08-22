@@ -46,6 +46,11 @@ export AWS_SESSION_TOKEN="EXAMPLEg5phBvAEvRJjpHXzfiaLJRRThf1iRAxuUqpcAwhCwUqRhtj
 terrafrom apply
 ```
 
+### List all resources 
+```
+terraform state list
+```
+
 ## Manual Action
 
 ### How to connect 
@@ -157,5 +162,17 @@ terraform destroy
 # Really helpful resources
 
 https://devopscube.com/aws-cloud-controller-manager/
+
+
 https://erivaldolopes.io/en/criando-um-cluster-kubernetes-em-alta-disponibilidade-com-ambiente-on-premises/
-https://github.com/antonbabenko/terraform-best-practices/blob/master/examples/medium-terraform/stage/variables.tf
+
+
+https://github.com/antonbabenko/terraform-best-practices/blob/master/examples/medium-terraform/
+
+
+https://medium.com/geekculture/deploying-an-ha-kubernetes-cluster-on-aws-with-kubekey-aec98b7d36b0
+
+
+## PRO TIPS
+
+- Network Load Balancers in security groups accept only one port inbound and one port outbound.

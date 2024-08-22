@@ -1,12 +1,20 @@
-
-data "template_file" "user_data_mom" {
-  template = "${file("../../scripts/user_data_mom.sh")}"
+data "template_file" "user_data_master" {
+  template = "${file("../../scripts/user_data_master.sh")}"
 
   vars = {
-    TF_LOAD_BALANCER_DNS = var.load_balancer_dns
-    TF_LOAD_BALANCER_PORT = var.load_balancer_port
+   # TF_LOAD_BALANCER_DNS = var.load_balancer_dns
+   # TF_LOAD_BALANCER_PORT = var.load_balancer_port
   }
 }
+
+# data "template_file" "user_data_mom" {
+#   template = "${file("../../scripts/user_data_mom.sh")}"
+
+#   vars = {
+#     TF_LOAD_BALANCER_DNS = var.load_balancer_dns
+#     TF_LOAD_BALANCER_PORT = var.load_balancer_port
+#   }
+# }
 
 resource "aws_key_pair" "master_key" {
   key_name   = "${var.name}-master"
@@ -190,56 +198,6 @@ resource "aws_instance" "master_node_0" {
     http_tokens = "required"
     http_endpoint = "enabled"
   }
-  user_data = data.template_file.user_data_mom.rendered
-  iam_instance_profile = aws_iam_instance_profile.ccm_master.name
-} 
-
-
-resource "aws_instance" "master_node_1" {
-  ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.small"
-  key_name      = aws_key_pair.master_key.key_name
-  
-  vpc_security_group_ids = [aws_security_group.allow_master.id]
-  subnet_id = var.private_subnet
-  tags = {
-    Name = "${var.name}-master_node_1"
-    "kubernetes.io/cluster/diy-kubernetes" = "owned"
-  }
-  private_dns_name_options {
-    enable_resource_name_dns_a_record    = true
-    enable_resource_name_dns_aaaa_record = false
-    hostname_type                        = "ip-name"
-  }
-  metadata_options {
-    http_tokens = "required"
-    http_endpoint = "enabled"
-  }
-  user_data = file("../../scripts/user_data_master.sh")
-  iam_instance_profile = aws_iam_instance_profile.ccm_master.name
-} 
-
-
-resource "aws_instance" "master_node_2" {
-  ami           = "ami-0b27735385ddf20e8"
-  instance_type = "t3.small"
-  key_name      = aws_key_pair.master_key.key_name
-  
-  vpc_security_group_ids = [aws_security_group.allow_master.id]
-  subnet_id = var.private_subnet
-  tags = {
-    Name = "${var.name}-master_node_2"
-    "kubernetes.io/cluster/diy-kubernetes" = "owned"
-  }
-  private_dns_name_options {
-    enable_resource_name_dns_a_record    = true
-    enable_resource_name_dns_aaaa_record = false
-    hostname_type                        = "ip-name"
-  }
-  metadata_options {
-    http_tokens = "required"
-    http_endpoint = "enabled"
-  }
-  user_data = file("../../scripts/user_data_master.sh")
+  user_data = data.template_file.user_data_master.rendered
   iam_instance_profile = aws_iam_instance_profile.ccm_master.name
 } 

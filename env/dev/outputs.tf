@@ -23,11 +23,6 @@ output "workers_private_ips" {
   value       = module.worker_nodes.private_ips
 }
 
-output "mom_instance_id" {
-  description = "master of master (mom) instance id"
-  value       = module.control_plane.mom_instance_id
-}
-
 output "master_instance_ids" {
   description = "master instance ids"
   value       = module.control_plane.master_instance_ids
